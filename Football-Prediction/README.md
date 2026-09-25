@@ -59,4 +59,6 @@ Final
 - jalgpalli_prediction.drawio – klassiskeem XML-formaadis
 - jalgpalli_prediction.png – klassiskeem PNG-formaadis
 - FootballPrediction_Dokumentatsioon.docx – klasside dokumentatsioon
+<img width="1597" height="899" alt="image" src="https://github.com/user-attachments/assets/6e16acf8-b211-4f15-b25f-9f714f253288" />
+
 
