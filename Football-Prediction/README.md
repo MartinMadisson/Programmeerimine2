@@ -53,6 +53,7 @@ Final
 ↓
 1 võitja
 
-<img width="1597" height="899" alt="image" src="https://github.com/user-attachments/assets/6e16acf8-b211-4f15-b25f-9f714f253288" />
+<img width="794" height="821" alt="image" src="https://github.com/user-attachments/assets/573c350f-fc5d-4cc9-9828-caef2e52c594" />
+
 
 
