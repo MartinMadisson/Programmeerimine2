@@ -8,6 +8,7 @@ namespace KooliProjekt.Application.Data.Football_prediction_MartinM
 
       public class Tournament
         {
+        [Required]
             public int Id { get; set; }
 
             [Required]

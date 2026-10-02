@@ -6,7 +6,7 @@ namespace KooliProjekt.Application.Data.Football_prediction_MartinM
 {
     public class  Match
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
         public DateTime Date { get; set; }
         public int TournamentId { get; set; }
         public int Teamt1Id { get; set; }
