@@ -24,5 +24,3 @@ namespace KooliProjekt.Application.Data
 
     }
 }
-
-
