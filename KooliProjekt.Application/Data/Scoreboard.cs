@@ -4,7 +4,7 @@ using System.Text;
 
 namespace KooliProjekt.Application.Data.Football_prediction_MartinM
 {
-    public class  ScoreBoard
+    public class  Scoreboard
 
     {
         public int Id { get; set; }

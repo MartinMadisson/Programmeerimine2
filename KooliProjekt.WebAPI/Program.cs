@@ -48,12 +48,21 @@ namespace KooliProjekt.WebAPI
                 app.UseSwaggerUI();
             }
 
-            app.UseAuthorization();
-
 
             app.MapControllers();
 
+            using (var scope = app.Services.CreateScope())
+            using (var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>())
+            {
+                dbContext.Database.Migrate();
+
+#if DEBUG
+                SeedData.Generate(dbContext);
+#endif
+            }
+
             app.Run();
+
         }
     }
 }

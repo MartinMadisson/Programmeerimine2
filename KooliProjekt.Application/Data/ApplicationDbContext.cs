@@ -21,6 +21,7 @@ namespace KooliProjekt.Application.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Scoreboard> Scoreboards { get; set; }
         public DbSet<Tournament> Tournaments { get; set; }
+        public DbSet<Prediction> Predictions { get; set; }
 
     }
 }
