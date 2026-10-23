@@ -1,9 +1,9 @@
 using MediatR;
-using KooliProjekt.Application.Data.Football_prediction_MartinM;
-
+using KooliProjekt.Application.Dto;
+using KooliProjekt.Application.Infrastructure.Results;
 namespace KooliProjekt.Application.Features.Predictions
 {
-    public class GetPredictionQuery : IRequest<Prediction>
+    public class GetPredictionQuery : IRequest<OperationResult<PredictionDto>>
     {
         public int Id { get; set; }
     }

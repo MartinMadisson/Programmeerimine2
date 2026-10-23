@@ -1,9 +1,9 @@
 using MediatR;
-using KooliProjekt.Application.Data.Football_prediction_MartinM;
-
+using KooliProjekt.Application.Dto;
+using KooliProjekt.Application.Infrastructure.Results;
 namespace KooliProjekt.Application.Features.Scoreboards
 {
-    public class GetScoreboardQuery : IRequest<Scoreboard>
+    public class GetScoreboardQuery : IRequest<OperationResult<ScoreboardDto>>
     {
         public int Id { get; set; }
     }
