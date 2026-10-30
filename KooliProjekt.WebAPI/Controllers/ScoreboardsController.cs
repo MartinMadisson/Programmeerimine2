@@ -30,5 +30,19 @@ namespace KooliProjekt.WebAPI.Controllers
             var result = await _mediator.Send(new ListScoreboardsQuery());
             return Result(result);
         }
+
+        [HttpPost("save")]
+        public async Task<IActionResult> Save([FromBody] SaveScoreboardCommand command)
+        {
+            var result = await _mediator.Send(command);
+            return Result(result);
+        }
+
+        [HttpDelete("delete")]
+        public async Task<IActionResult> Delete([FromBody] DeleteScoreboardCommand command)
+        {
+            var result = await _mediator.Send(command);
+            return Result(result);
+        }
     }
 }
