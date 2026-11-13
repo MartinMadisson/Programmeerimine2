@@ -1,0 +1,64 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Page-1" id="AHSRAsRQ9xavu9jG9uqJ">
+    <mxGraphModel dx="2054" dy="1137" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="uy-PACvAL35WXFKQf5kS-123" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fontSize=14;align=left;spacingLeft=8;spacingTop=8;" value="&lt;b&gt;Tournament&lt;/b&gt;&lt;hr&gt;&lt;i&gt;Atribuudid&lt;/i&gt;&lt;br&gt;- name : String&lt;br&gt;- year : int&lt;br&gt;- teams : List&lt;Team&gt;&lt;hr&gt;&lt;i&gt;Meetodid&lt;/i&gt;&lt;br&gt;+ startTournament() : void&lt;br&gt;+ getTeams() : List&lt;Team&gt;" vertex="1">
+          <mxGeometry height="210" width="280" x="60" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="uy-PACvAL35WXFKQf5kS-124" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fontSize=14;align=left;spacingLeft=8;spacingTop=8;" value="&lt;b&gt;Team&lt;/b&gt;&lt;hr&gt;&lt;i&gt;Atribuudid&lt;/i&gt;&lt;br&gt;- teamId : int&lt;br&gt;- name : String&lt;br&gt;- country : String&lt;br&gt;- ranking : int&lt;hr&gt;&lt;i&gt;Meetodid&lt;/i&gt;&lt;br&gt;+ getName() : String&lt;br&gt;+ getRanking() : int" vertex="1">
+          <mxGeometry height="210" width="280" x="430" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="uy-PACvAL35WXFKQf5kS-125" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fontSize=14;align=left;spacingLeft=8;spacingTop=8;" value="&lt;b&gt;Match&lt;/b&gt;&lt;hr&gt;&lt;i&gt;Atribuudid&lt;/i&gt;&lt;br&gt;- matchId : int&lt;br&gt;- homeTeam : Team&lt;br&gt;- awayTeam : Team&lt;br&gt;- homeScore : int&lt;br&gt;- awayScore : int&lt;hr&gt;&lt;i&gt;Meetodid&lt;/i&gt;&lt;br&gt;+ playMatch() : void&lt;br&gt;+ getWinner() : Team" vertex="1">
+          <mxGeometry height="230" width="300" x="800" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="uy-PACvAL35WXFKQf5kS-126" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fontSize=14;align=left;spacingLeft=8;spacingTop=8;" value="&lt;b&gt;Round&lt;/b&gt;&lt;hr&gt;&lt;i&gt;Atribuudid&lt;/i&gt;&lt;br&gt;- name : String&lt;br&gt;- matches : List&lt;Match&gt;&lt;hr&gt;&lt;i&gt;Väärtused&lt;/i&gt;&lt;br&gt;Round of 16&lt;br&gt;Quarter-final&lt;br&gt;Semi-final&lt;br&gt;Final&lt;hr&gt;&lt;i&gt;Meetodid&lt;/i&gt;&lt;br&gt;+ addMatch() : void&lt;br&gt;+ getMatches() : List&lt;Match&gt;" vertex="1">
+          <mxGeometry height="260" width="300" x="1160" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="uy-PACvAL35WXFKQf5kS-127" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fontSize=14;align=left;spacingLeft=8;spacingTop=8;" value="&lt;b&gt;Prediction&lt;/b&gt;&lt;hr&gt;&lt;i&gt;Atribuudid&lt;/i&gt;&lt;br&gt;- predictionId : int&lt;br&gt;- predictedWinner : Team&lt;br&gt;- confidence : double&lt;hr&gt;&lt;i&gt;Meetodid&lt;/i&gt;&lt;br&gt;+ makePrediction() : void&lt;br&gt;+ getPredictedWinner() : Team" vertex="1">
+          <mxGeometry height="210" width="300" x="430" y="410" as="geometry" />
+        </mxCell>
+        <mxCell id="uy-PACvAL35WXFKQf5kS-128" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fontSize=14;align=left;spacingLeft=8;spacingTop=8;" value="&lt;b&gt;PredictionResult&lt;/b&gt;&lt;hr&gt;&lt;i&gt;Atribuudid&lt;/i&gt;&lt;br&gt;- resultId : int&lt;br&gt;- team : Team&lt;br&gt;- round : Round&lt;br&gt;- probability : double&lt;hr&gt;&lt;i&gt;Meetodid&lt;/i&gt;&lt;br&gt;+ calculateProbability() : double&lt;br&gt;+ isQualified() : boolean" vertex="1">
+          <mxGeometry height="220" width="320" x="800" y="410" as="geometry" />
+        </mxCell>
+        <mxCell id="uy-PACvAL35WXFKQf5kS-129" edge="1" parent="1" source="uy-PACvAL35WXFKQf5kS-123" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;startArrow=none;" target="uy-PACvAL35WXFKQf5kS-124" value="1        *">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="uy-PACvAL35WXFKQf5kS-130" edge="1" parent="1" source="uy-PACvAL35WXFKQf5kS-124" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;startArrow=none;" target="uy-PACvAL35WXFKQf5kS-125" value="2        *">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="uy-PACvAL35WXFKQf5kS-131" edge="1" parent="1" source="uy-PACvAL35WXFKQf5kS-126" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;startArrow=none;" target="uy-PACvAL35WXFKQf5kS-125" value="1        *">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="uy-PACvAL35WXFKQf5kS-132" edge="1" parent="1" source="uy-PACvAL35WXFKQf5kS-127" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;startArrow=none;" target="uy-PACvAL35WXFKQf5kS-124" value="*        1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="uy-PACvAL35WXFKQf5kS-133" edge="1" parent="1" source="uy-PACvAL35WXFKQf5kS-128" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;startArrow=none;" target="uy-PACvAL35WXFKQf5kS-124" value="*        1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="uy-PACvAL35WXFKQf5kS-134" edge="1" parent="1" source="uy-PACvAL35WXFKQf5kS-128" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;startArrow=none;" target="uy-PACvAL35WXFKQf5kS-126" value="*        1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="uy-PACvAL35WXFKQf5kS-135" edge="1" parent="1" source="uy-PACvAL35WXFKQf5kS-127" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;startArrow=none;" target="uy-PACvAL35WXFKQf5kS-128" value="1        1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="uy-PACvAL35WXFKQf5kS-136" parent="1" style="text;html=1;strokeColor=none;fillColor=none;fontSize=18;fontStyle=1;" value="&lt;b&gt;Turniiri etapid&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="300" x="1160" y="410" as="geometry" />
+        </mxCell>
+        <mxCell id="uy-PACvAL35WXFKQf5kS-137" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=14;" value="ROUND OF 16 — 16 meeskonda → 8 võitjat" vertex="1">
+          <mxGeometry height="55" width="300" x="1160" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="uy-PACvAL35WXFKQf5kS-138" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=14;" value="QUARTER-FINAL — 8 meeskonda → 4 võitjat" vertex="1">
+          <mxGeometry height="55" width="300" x="1160" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="uy-PACvAL35WXFKQf5kS-139" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=14;" value="SEMI-FINAL — 4 meeskonda → 2 võitjat" vertex="1">
+          <mxGeometry height="55" width="300" x="1160" y="590" as="geometry" />
+        </mxCell>
+        <mxCell id="uy-PACvAL35WXFKQf5kS-140" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=14;fontStyle=1;" value="FINAL — 2 meeskonda → 1 võitja 🏆" vertex="1">
+          <mxGeometry height="55" width="300" x="1160" y="660" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,6 +1,259 @@
-@KooliProjekt.WebAPI_HostAddress = http://localhost:5086
+@Host = http://localhost:5189
+# Kui Swagger avaneb mõnel muul pordil (vaata brauseri aadressi), muuda see number siin ära.
+@TeamId = 1
 
-GET {{KooliProjekt.WebAPI_HostAddress}}/weatherforecast/
-Accept: application/json
+# Märkus: Id-d on seedandmetest (SeedData). Kui sinu andmebaasis on teised, muuda @TeamId jms.
+
+############################################################
+### TEAMS - faili käsud ja päringud
+############################################################
+# Faili üleslaadimiseks kasuta Swaggerit (/swagger -> POST /api/Teams/addfile)
+# või Postmani: POST {{Host}}/api/Teams/addfile?id=1 , Body = form-data, key = file (File)
+
+### F1. OK: tiimi failide list
+GET {{Host}}/api/Teams/listfiles?id={{TeamId}}
+
+### F2. VIGA: olematu tiim -> "The specified team does not exist."
+GET {{Host}}/api/Teams/listfiles?id=99999
+
+### F3. VIGA: id = 0 -> "Id must be greater than or equal to 1."
+GET {{Host}}/api/Teams/listfiles?id=0
+
+### F4. OK: võta fail (asenda failinimi addfile vastusest)
+GET {{Host}}/api/Teams/getfile?id={{TeamId}}&fileName=asenda-mind.png
+
+### F5. VIGA: faili pole -> "File not found."
+GET {{Host}}/api/Teams/getfile?id={{TeamId}}&fileName=puudub.png
+
+### F6. VIGA: kataloogist väljapääs -> "FileName must not contain path characters."
+GET {{Host}}/api/Teams/getfile?id={{TeamId}}&fileName=..%5C..%5Cappsettings.json
+
+### F7. VIGA: tühi failinimi
+GET {{Host}}/api/Teams/getfile?id={{TeamId}}&fileName=
+
+### F8. OK: kustuta fail (asenda failinimi)
+DELETE {{Host}}/api/Teams/deletefile
+Content-Type: application/json
+
+{ "id": 1, "fileName": "asenda-mind.png" }
+
+### F9. VIGA: kustuta olematu fail -> "File not found."
+DELETE {{Host}}/api/Teams/deletefile
+Content-Type: application/json
+
+{ "id": 1, "fileName": "puudub.png" }
+
+### F10. VIGA: olematu tiim
+DELETE {{Host}}/api/Teams/deletefile
+Content-Type: application/json
+
+{ "id": 99999, "fileName": "a.png" }
+
+############################################################
+### TEAMS - valideerimine
+############################################################
+
+### T1. OK
+POST {{Host}}/api/Teams/save
+Content-Type: application/json
+
+{ "id": 0, "name": "Testtiim 13.11" }
+
+### T2. VIGA: tühi nimi
+POST {{Host}}/api/Teams/save
+Content-Type: application/json
+
+{ "id": 0, "name": "" }
+
+### T3. VIGA: duplikaat (käivita T1 uuesti)
+POST {{Host}}/api/Teams/save
+Content-Type: application/json
+
+{ "id": 0, "name": "Testtiim 13.11" }
+
+### T4. VIGA: nimi > 100 märki
+POST {{Host}}/api/Teams/save
+Content-Type: application/json
+
+{ "id": 0, "name": "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890X" }
+
+### T5. VIGA: negatiivne id
+POST {{Host}}/api/Teams/save
+Content-Type: application/json
+
+{ "id": -1, "name": "X" }
+
+### T6. VIGA: list page = 0, pageSize = 0
+GET {{Host}}/api/Teams/list/0/0
+
+### T7. VIGA: pageSize > 100
+GET {{Host}}/api/Teams/list/1/101
+
+### T8. OK: list
+GET {{Host}}/api/Teams/list/1/10
+
+############################################################
+### MATCHES
+############################################################
+
+### M1. OK
+POST {{Host}}/api/Matches/save
+Content-Type: application/json
+
+{ "id": 0, "date": "2026-12-01T18:00:00", "tournamentId": 1, "teamt1Id": 1, "team2Id": 2, "team1Score": 2, "team2Score": 1, "roundId": 2 }
+
+### M2. VIGA: sama tiim mõlemal poolel -> "Team 1 and team 2 must be different teams."
+POST {{Host}}/api/Matches/save
+Content-Type: application/json
+
+{ "id": 0, "date": "2026-12-01T18:00:00", "tournamentId": 1, "teamt1Id": 1, "team2Id": 1, "team1Score": 0, "team2Score": 0, "roundId": 1 }
+
+### M3. VIGA: olematu turniir/tiim
+POST {{Host}}/api/Matches/save
+Content-Type: application/json
+
+{ "id": 0, "date": "2026-12-01T18:00:00", "tournamentId": 99999, "teamt1Id": 99999, "team2Id": 99998, "team1Score": 0, "team2Score": 0, "roundId": 1 }
+
+### M4. VIGA: negatiivne skoor, ebareaalne skoor, vale round, tühi kuupäev
+POST {{Host}}/api/Matches/save
+Content-Type: application/json
+
+{ "id": 0, "date": "0001-01-01T00:00:00", "tournamentId": 1, "teamt1Id": 1, "team2Id": 2, "team1Score": -1, "team2Score": 99, "roundId": 9 }
+
+### M5. VIGA: sama paar samas voorus samas turniiris (käivita M1 uuesti)
+POST {{Host}}/api/Matches/save
+Content-Type: application/json
+
+{ "id": 0, "date": "2026-12-02T18:00:00", "tournamentId": 1, "teamt1Id": 2, "team2Id": 1, "team1Score": 0, "team2Score": 0, "roundId": 2 }
+
+### M6. VIGA: list ja get
+GET {{Host}}/api/Matches/list/0/0
 
 ###
+GET {{Host}}/api/Matches/get/0
+
+###
+DELETE {{Host}}/api/Matches/delete
+Content-Type: application/json
+
+{ "id": 0 }
+
+############################################################
+### PREDICTIONS
+############################################################
+
+### P1. OK (kasuta olemasolevat userit ja matchi, mille kohta ennustust veel pole)
+POST {{Host}}/api/Predictions/save
+Content-Type: application/json
+
+{ "id": 0, "team1Score": 2, "team2Score": 1, "points": 3, "matchId": 1, "userId": 2 }
+
+### P2. VIGA: ebareaalne ennustus (negatiivne ja liiga suur)
+POST {{Host}}/api/Predictions/save
+Content-Type: application/json
+
+{ "id": 0, "team1Score": -3, "team2Score": 50, "points": 99, "matchId": 1, "userId": 2 }
+
+### P3. VIGA: olematu mäng ja kasutaja
+POST {{Host}}/api/Predictions/save
+Content-Type: application/json
+
+{ "id": 0, "team1Score": 1, "team2Score": 1, "points": 0, "matchId": 99999, "userId": 99999 }
+
+### P4. VIGA: sama kasutaja sama mäng (käivita P1 uuesti)
+POST {{Host}}/api/Predictions/save
+Content-Type: application/json
+
+{ "id": 0, "team1Score": 0, "team2Score": 0, "points": 0, "matchId": 1, "userId": 2 }
+
+############################################################
+### USERS
+############################################################
+
+### U1. OK
+POST {{Host}}/api/Users/save
+Content-Type: application/json
+
+{ "id": 0, "username": "testkasutaja1", "password": "salajane-parool-1" }
+
+### U2. VIGA: sama kasutajanimi (ka erinev suurus: TESTKASUTAJA1)
+POST {{Host}}/api/Users/save
+Content-Type: application/json
+
+{ "id": 0, "username": "TESTKASUTAJA1", "password": "teine-parool-2" }
+
+### U3. VIGA: parool juba kasutusel
+POST {{Host}}/api/Users/save
+Content-Type: application/json
+
+{ "id": 0, "username": "testkasutaja2", "password": "salajane-parool-1" }
+
+### U4. VIGA: parool = kasutajanimi
+POST {{Host}}/api/Users/save
+Content-Type: application/json
+
+{ "id": 0, "username": "testkasutaja3", "password": "testkasutaja3" }
+
+### U5. VIGA: parool = teise kasutaja nimi
+POST {{Host}}/api/Users/save
+Content-Type: application/json
+
+{ "id": 0, "username": "testkasutaja4", "password": "testkasutaja1" }
+
+### U6. VIGA: tühjad väljad
+POST {{Host}}/api/Users/save
+Content-Type: application/json
+
+{ "id": 0, "username": "", "password": "" }
+
+### U7. VIGA: nimi > 50 ja parool > 100
+POST {{Host}}/api/Users/save
+Content-Type: application/json
+
+{ "id": 0, "username": "123456789012345678901234567890123456789012345678901", "password": "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890X" }
+
+############################################################
+### PLAYERS / TOURNAMENTS / SCOREBOARDS
+############################################################
+
+### PL1. VIGA: tühi nimi
+POST {{Host}}/api/Players/save
+Content-Type: application/json
+
+{ "id": 0, "name": "" }
+
+### PL2. VIGA: duplikaat (seedandmetes on "Martin Tamm")
+POST {{Host}}/api/Players/save
+Content-Type: application/json
+
+{ "id": 0, "name": "Martin Tamm" }
+
+### TO1. VIGA: duplikaat (seedandmetes on "Premium liiga 2022")
+POST {{Host}}/api/Tournaments/save
+Content-Type: application/json
+
+{ "id": 0, "name": "Premium liiga 2022" }
+
+### TO2. OK
+POST {{Host}}/api/Tournaments/save
+Content-Type: application/json
+
+{ "id": 0, "name": "Testturniir 13.11" }
+
+### S1. VIGA: negatiivne skoor, olematu kasutaja ja turniir
+POST {{Host}}/api/Scoreboards/save
+Content-Type: application/json
+
+{ "id": 0, "tournamentId": 99999, "userId": 99999, "score": -5 }
+
+### S2. VIGA: sama kasutaja samas turniiris (seedandmetes on userId=1, tournamentId=1)
+POST {{Host}}/api/Scoreboards/save
+Content-Type: application/json
+
+{ "id": 0, "tournamentId": 1, "userId": 1, "score": 10 }
+
+### S3. OK
+POST {{Host}}/api/Scoreboards/save
+Content-Type: application/json
+
+{ "id": 0, "tournamentId": 2, "userId": 1, "score": 10 }
