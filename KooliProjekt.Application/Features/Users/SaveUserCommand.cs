@@ -10,5 +10,6 @@ namespace KooliProjekt.Application.Features.Users
         public int Id { get; set; }
         public string username { get; set; }
         public string password { get; set; }
+        public bool IsAdmin { get; set; }
     }
 }

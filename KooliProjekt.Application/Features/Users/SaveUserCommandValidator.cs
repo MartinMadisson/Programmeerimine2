@@ -11,8 +11,7 @@ namespace KooliProjekt.Application.Features.Users
             RuleFor(x => x.Id)
                 .GreaterThanOrEqualTo(0).WithMessage("Id must be greater than or equal to 0.");
 
-            // Klassidokumentatsioon: nimi ja parool unikaalsed, mitte sarnased teiste kasutajate nimedega.
-            // Andmebaasis on username veerg 50 märki (User.cs), seetõttu piirame selle 50-ga.
+            // Kasutajanimi: kohustuslik, unikaalne (suurtähtedest sõltumatult), max 50 (andmebaasi piirang)
             RuleFor(x => x.username)
                 .Cascade(CascadeMode.Stop)
                 .NotEmpty().WithMessage("Username is required.")
@@ -20,12 +19,10 @@ namespace KooliProjekt.Application.Features.Users
                 .MustAsync(async (command, name, ct) =>
                     !await dbContext.Users.AnyAsync(u =>
                         u.id != command.Id && u.username.ToLower() == name.Trim().ToLower(), ct))
-                .WithMessage("A user with the same or a similar username already exists.")
-                .MustAsync(async (command, name, ct) =>
-                    !await dbContext.Users.AnyAsync(u =>
-                        u.id != command.Id && u.password.ToLower() == name.Trim().ToLower(), ct))
-                .WithMessage("Username must not be the same as another user's password.");
+                .WithMessage("A user with the same or a similar username already exists.");
 
+            // NB! Paroolid salvestatakse räsina (iga räsi on soolatud ja erinev), seega
+            // "parool peab olema unikaalne" reeglit ei saa enam andmebaasist kontrollida.
             RuleFor(x => x.password)
                 .Cascade(CascadeMode.Stop)
                 .NotEmpty().WithMessage("Password is required.")
@@ -33,9 +30,6 @@ namespace KooliProjekt.Application.Features.Users
                 .Must((command, password) =>
                     !string.Equals(command.username?.Trim(), password.Trim(), System.StringComparison.OrdinalIgnoreCase))
                 .WithMessage("Password must not be the same as the username.")
-                .MustAsync(async (command, password, ct) =>
-                    !await dbContext.Users.AnyAsync(u => u.id != command.Id && u.password == password, ct))
-                .WithMessage("This password is already in use by another user.")
                 .MustAsync(async (command, password, ct) =>
                     !await dbContext.Users.AnyAsync(u =>
                         u.id != command.Id && u.username.ToLower() == password.Trim().ToLower(), ct))

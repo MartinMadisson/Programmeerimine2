@@ -150,6 +150,9 @@ namespace KooliProjekt.Application.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
 
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("bit");
+
                     b.Property<string>("password")
                         .IsRequired()
                         .HasMaxLength(100)

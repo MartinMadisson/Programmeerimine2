@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Linq;
+using KooliProjekt.Application.Authentication;
 using KooliProjekt.Application.Data.Football_prediction_MartinM;
 
 namespace KooliProjekt.Application.Data
@@ -122,12 +123,15 @@ namespace KooliProjekt.Application.Data
 
             if (!context.Users.Any())
             {
+                // Üks räsi kõigile testkasutajatele (räsimine on tahtlikult aeglane)
+                var testPasswordHash = PasswordHelper.Hash("TEST_ONLY_NOT_A_REAL_PASSWORD");
+
                 for (int i = 1; i <= 35; i++)
                 {
                     context.Users.Add(new User
                     {
                         username = $"jalkafann{i}",
-                        password = "TEST_ONLY_NOT_A_REAL_PASSWORD"
+                        password = testPasswordHash
                     });
                 }
 
@@ -227,6 +231,59 @@ namespace KooliProjekt.Application.Data
                     context.SaveChanges();
                 }
             }
+
+            EnsureLoginUsers(context);
+        }
+
+        // Ülesanded 12-14: tagab, et andmebaasis on sisselogimiseks kaks kasutajat
+        //   admin    / Admin123!    (IsAdmin = true)
+        //   kasutaja / Kasutaja123! (IsAdmin = false)
+        // Lisaks parandab vanad kasutajad, kelle parool on veel tavalise tekstina.
+        private static void EnsureLoginUsers(ApplicationDbContext context)
+        {
+            // Vanad (räsimata) paroolid -> räsiks, muidu ei saaks nendega sisse logida
+            var legacyUsers = context.Users.ToList()
+                .Where(u => !PasswordHelper.IsHash(u.password))
+                .ToList();
+
+            if (legacyUsers.Count > 0)
+            {
+                var legacyHashes = new System.Collections.Generic.Dictionary<string, string>();
+                foreach (var user in legacyUsers)
+                {
+                    if (!legacyHashes.TryGetValue(user.password, out var hash))
+                    {
+                        hash = PasswordHelper.Hash(user.password);
+                        legacyHashes[user.password] = hash;
+                    }
+
+                    user.password = hash;
+                }
+
+                context.SaveChanges();
+            }
+
+            if (!context.Users.Any(u => u.username == "admin"))
+            {
+                context.Users.Add(new User
+                {
+                    username = "admin",
+                    password = PasswordHelper.Hash("Admin123!"),
+                    IsAdmin = true
+                });
+            }
+
+            if (!context.Users.Any(u => u.username == "kasutaja"))
+            {
+                context.Users.Add(new User
+                {
+                    username = "kasutaja",
+                    password = PasswordHelper.Hash("Kasutaja123!"),
+                    IsAdmin = false
+                });
+            }
+
+            context.SaveChanges();
         }
     }
 }

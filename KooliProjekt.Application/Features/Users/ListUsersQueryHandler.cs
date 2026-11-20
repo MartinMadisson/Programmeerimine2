@@ -21,7 +21,8 @@ namespace KooliProjekt.Application.Features.Users
                 .Select(user => new UserItemDto
                 {
                     Id = user.id,
-                    Username = user.username
+                    Username = user.username,
+                    IsAdmin = user.IsAdmin
                 })
                 .GetPagedAsync(request.Page, request.PageSize);
             return result;

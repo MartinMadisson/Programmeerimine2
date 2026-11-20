@@ -16,7 +16,10 @@ namespace KooliProjekt.Application.Data.Football_prediction_MartinM
 
         [Required]
         [MaxLength(100)]
-        public string password { get; set; }
+        public string password { get; set; }   // siin hoitakse parooli RÄSI (PasswordHelper.Hash), mitte parooli ennast
+
+        // Ülesanne 8: administraatori lipp
+        public bool IsAdmin { get; set; }
 
 
     }

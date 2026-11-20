@@ -45,7 +45,7 @@ namespace KooliProjekt.Application.Infrastructure.Files
                 return Task.FromResult<Stream>(null);
             }
 
-            Stream stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            Stream stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
             return Task.FromResult(stream);
         }
 

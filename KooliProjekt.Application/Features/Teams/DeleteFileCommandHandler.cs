@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,12 +24,23 @@ namespace KooliProjekt.Application.Features.Teams
             var store = FileStore.ForTeam(request.Id);
 
             var files = await _fileClient.List(store);
-            if (!files.Contains(request.FileName))
+            var existingName = files.FirstOrDefault(f =>
+                string.Equals(f, request.FileName, StringComparison.OrdinalIgnoreCase));
+
+            if (existingName == null)
             {
                 return result.AddPropertyError("FileName", "File not found.");
             }
 
-            await _fileClient.Delete(request.FileName, store);
+            try
+            {
+                await _fileClient.Delete(existingName, store);
+            }
+            catch (IOException)
+            {
+                // Fail on mõne teise programmi poolt avatud (nt pildivaatur või Explorer)
+                return result.AddPropertyError("FileName", "The file is in use by another program. Close it and try again.");
+            }
 
             return result;
         }

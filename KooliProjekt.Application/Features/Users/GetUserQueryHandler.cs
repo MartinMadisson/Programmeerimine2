@@ -22,7 +22,8 @@ namespace KooliProjekt.Application.Features.Users
                 .Select(user => new UserDto
                 {
                     Id = user.id,
-                    Username = user.username
+                    Username = user.username,
+                    IsAdmin = user.IsAdmin
                 })
                 .FirstOrDefaultAsync(cancellationToken);
 

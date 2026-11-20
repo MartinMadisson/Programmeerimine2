@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using KooliProjekt.Application.Authentication;
 using KooliProjekt.Application.Data;
 using KooliProjekt.Application.Infrastructure.Results;
 using MediatR;
@@ -30,7 +31,9 @@ namespace KooliProjekt.Application.Features.Users
             }
 
             item.username = request.username;
-            item.password = request.password;
+            // Parooli ei hoita kunagi tavatekstina, andmebaasi läheb räsi
+            item.password = PasswordHelper.Hash(request.password);
+            item.IsAdmin = request.IsAdmin;
             await _dbContext.SaveChangesAsync(cancellationToken);
             return result;
         }

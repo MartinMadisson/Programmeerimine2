@@ -1,8 +1,59 @@
 @Host = http://localhost:5189
 # Kui Swagger avaneb mõnel muul pordil (vaata brauseri aadressi), muuda see number siin ära.
+
+# TOKEN: käivita A1 (admin) või A2 (kasutaja), kopeeri vastusest "value" välja sisu
+# (ilma jutumärkideta) siia rea lõppu ja salvesta fail. Token kehtib 60 minutit.
+@token = PASTE_TOKEN_HERE
 @TeamId = 1
 
-# Märkus: Id-d on seedandmetest (SeedData). Kui sinu andmebaasis on teised, muuda @TeamId jms.
+############################################################
+### AUTENTIMINE (20.11) - need ei vaja tokenit
+############################################################
+
+### A1. OK: admin logib sisse -> vastuses "value" = token (selles peab olema role=Admin)
+POST {{Host}}/api/Authentication/authenticate
+Content-Type: application/json
+
+{ "userName": "admin", "password": "Admin123!" }
+
+### A2. OK: tavakasutaja logib sisse -> token ILMA role claimita
+POST {{Host}}/api/Authentication/authenticate
+Content-Type: application/json
+
+{ "userName": "kasutaja", "password": "Kasutaja123!" }
+
+### A3. VIGA: vale parool -> 400 "Invalid username or password."
+POST {{Host}}/api/Authentication/authenticate
+Content-Type: application/json
+
+{ "userName": "admin", "password": "vale-parool" }
+
+### A4. VIGA: olematu kasutaja -> 400 "Invalid username or password."
+POST {{Host}}/api/Authentication/authenticate
+Content-Type: application/json
+
+{ "userName": "olematu", "password": "Admin123!" }
+
+### A5. VIGA: tühjad väljad -> 400 (validaator)
+POST {{Host}}/api/Authentication/authenticate
+Content-Type: application/json
+
+{ "userName": "", "password": "" }
+
+### A6. VIGA: päring ILMA tokenita -> 401 Unauthorized
+GET {{Host}}/api/Teams/list/1/10
+
+### A7. OK: sama päring tokeniga -> 200 (pane @token väärtus paika)
+GET {{Host}}/api/Teams/list/1/10
+Authorization: Bearer {{token}}
+
+### A8. VIGA: vigane token -> 401
+GET {{Host}}/api/Teams/list/1/10
+Authorization: Bearer see.pole.token
+
+### A9. OK: kasutajate list näitab ka isAdmin välja (admin = true, kasutaja = false)
+GET {{Host}}/api/Users/list/1/100
+Authorization: Bearer {{token}}
 
 ############################################################
 ### TEAMS - faili käsud ja päringud
@@ -12,39 +63,49 @@
 
 ### F1. OK: tiimi failide list
 GET {{Host}}/api/Teams/listfiles?id={{TeamId}}
+Authorization: Bearer {{token}}
 
 ### F2. VIGA: olematu tiim -> "The specified team does not exist."
 GET {{Host}}/api/Teams/listfiles?id=99999
+Authorization: Bearer {{token}}
 
 ### F3. VIGA: id = 0 -> "Id must be greater than or equal to 1."
 GET {{Host}}/api/Teams/listfiles?id=0
+Authorization: Bearer {{token}}
 
 ### F4. OK: võta fail (asenda failinimi addfile vastusest)
 GET {{Host}}/api/Teams/getfile?id={{TeamId}}&fileName=asenda-mind.png
+Authorization: Bearer {{token}}
 
 ### F5. VIGA: faili pole -> "File not found."
 GET {{Host}}/api/Teams/getfile?id={{TeamId}}&fileName=puudub.png
+Authorization: Bearer {{token}}
 
 ### F6. VIGA: kataloogist väljapääs -> "FileName must not contain path characters."
 GET {{Host}}/api/Teams/getfile?id={{TeamId}}&fileName=..%5C..%5Cappsettings.json
+Authorization: Bearer {{token}}
 
 ### F7. VIGA: tühi failinimi
 GET {{Host}}/api/Teams/getfile?id={{TeamId}}&fileName=
+Authorization: Bearer {{token}}
 
 ### F8. OK: kustuta fail (asenda failinimi)
 DELETE {{Host}}/api/Teams/deletefile
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "id": 1, "fileName": "asenda-mind.png" }
 
 ### F9. VIGA: kustuta olematu fail -> "File not found."
 DELETE {{Host}}/api/Teams/deletefile
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "id": 1, "fileName": "puudub.png" }
 
 ### F10. VIGA: olematu tiim
 DELETE {{Host}}/api/Teams/deletefile
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "id": 99999, "fileName": "a.png" }
@@ -55,42 +116,50 @@ Content-Type: application/json
 
 ### T1. OK
 POST {{Host}}/api/Teams/save
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "id": 0, "name": "Testtiim 13.11" }
 
 ### T2. VIGA: tühi nimi
 POST {{Host}}/api/Teams/save
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "id": 0, "name": "" }
 
 ### T3. VIGA: duplikaat (käivita T1 uuesti)
 POST {{Host}}/api/Teams/save
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "id": 0, "name": "Testtiim 13.11" }
 
 ### T4. VIGA: nimi > 100 märki
 POST {{Host}}/api/Teams/save
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "id": 0, "name": "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890X" }
 
 ### T5. VIGA: negatiivne id
 POST {{Host}}/api/Teams/save
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "id": -1, "name": "X" }
 
 ### T6. VIGA: list page = 0, pageSize = 0
 GET {{Host}}/api/Teams/list/0/0
+Authorization: Bearer {{token}}
 
 ### T7. VIGA: pageSize > 100
 GET {{Host}}/api/Teams/list/1/101
+Authorization: Bearer {{token}}
 
 ### T8. OK: list
 GET {{Host}}/api/Teams/list/1/10
+Authorization: Bearer {{token}}
 
 ############################################################
 ### MATCHES
@@ -98,42 +167,50 @@ GET {{Host}}/api/Teams/list/1/10
 
 ### M1. OK
 POST {{Host}}/api/Matches/save
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "id": 0, "date": "2026-12-01T18:00:00", "tournamentId": 1, "teamt1Id": 1, "team2Id": 2, "team1Score": 2, "team2Score": 1, "roundId": 2 }
 
 ### M2. VIGA: sama tiim mõlemal poolel -> "Team 1 and team 2 must be different teams."
 POST {{Host}}/api/Matches/save
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "id": 0, "date": "2026-12-01T18:00:00", "tournamentId": 1, "teamt1Id": 1, "team2Id": 1, "team1Score": 0, "team2Score": 0, "roundId": 1 }
 
 ### M3. VIGA: olematu turniir/tiim
 POST {{Host}}/api/Matches/save
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "id": 0, "date": "2026-12-01T18:00:00", "tournamentId": 99999, "teamt1Id": 99999, "team2Id": 99998, "team1Score": 0, "team2Score": 0, "roundId": 1 }
 
 ### M4. VIGA: negatiivne skoor, ebareaalne skoor, vale round, tühi kuupäev
 POST {{Host}}/api/Matches/save
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "id": 0, "date": "0001-01-01T00:00:00", "tournamentId": 1, "teamt1Id": 1, "team2Id": 2, "team1Score": -1, "team2Score": 99, "roundId": 9 }
 
 ### M5. VIGA: sama paar samas voorus samas turniiris (käivita M1 uuesti)
 POST {{Host}}/api/Matches/save
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "id": 0, "date": "2026-12-02T18:00:00", "tournamentId": 1, "teamt1Id": 2, "team2Id": 1, "team1Score": 0, "team2Score": 0, "roundId": 2 }
 
 ### M6. VIGA: list ja get
 GET {{Host}}/api/Matches/list/0/0
+Authorization: Bearer {{token}}
 
 ###
 GET {{Host}}/api/Matches/get/0
+Authorization: Bearer {{token}}
 
 ###
 DELETE {{Host}}/api/Matches/delete
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "id": 0 }
@@ -144,24 +221,28 @@ Content-Type: application/json
 
 ### P1. OK (kasuta olemasolevat userit ja matchi, mille kohta ennustust veel pole)
 POST {{Host}}/api/Predictions/save
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "id": 0, "team1Score": 2, "team2Score": 1, "points": 3, "matchId": 1, "userId": 2 }
 
 ### P2. VIGA: ebareaalne ennustus (negatiivne ja liiga suur)
 POST {{Host}}/api/Predictions/save
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "id": 0, "team1Score": -3, "team2Score": 50, "points": 99, "matchId": 1, "userId": 2 }
 
 ### P3. VIGA: olematu mäng ja kasutaja
 POST {{Host}}/api/Predictions/save
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "id": 0, "team1Score": 1, "team2Score": 1, "points": 0, "matchId": 99999, "userId": 99999 }
 
 ### P4. VIGA: sama kasutaja sama mäng (käivita P1 uuesti)
 POST {{Host}}/api/Predictions/save
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "id": 0, "team1Score": 0, "team2Score": 0, "points": 0, "matchId": 1, "userId": 2 }
@@ -172,42 +253,42 @@ Content-Type: application/json
 
 ### U1. OK
 POST {{Host}}/api/Users/save
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
-{ "id": 0, "username": "testkasutaja1", "password": "salajane-parool-1" }
+{ "id": 0, "username": "testkasutaja1", "password": "salajane-parool-1", "isAdmin": false }
 
 ### U2. VIGA: sama kasutajanimi (ka erinev suurus: TESTKASUTAJA1)
 POST {{Host}}/api/Users/save
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "id": 0, "username": "TESTKASUTAJA1", "password": "teine-parool-2" }
 
-### U3. VIGA: parool juba kasutusel
-POST {{Host}}/api/Users/save
-Content-Type: application/json
-
-{ "id": 0, "username": "testkasutaja2", "password": "salajane-parool-1" }
-
 ### U4. VIGA: parool = kasutajanimi
 POST {{Host}}/api/Users/save
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "id": 0, "username": "testkasutaja3", "password": "testkasutaja3" }
 
 ### U5. VIGA: parool = teise kasutaja nimi
 POST {{Host}}/api/Users/save
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "id": 0, "username": "testkasutaja4", "password": "testkasutaja1" }
 
 ### U6. VIGA: tühjad väljad
 POST {{Host}}/api/Users/save
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "id": 0, "username": "", "password": "" }
 
 ### U7. VIGA: nimi > 50 ja parool > 100
 POST {{Host}}/api/Users/save
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "id": 0, "username": "123456789012345678901234567890123456789012345678901", "password": "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890X" }
@@ -218,42 +299,49 @@ Content-Type: application/json
 
 ### PL1. VIGA: tühi nimi
 POST {{Host}}/api/Players/save
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "id": 0, "name": "" }
 
 ### PL2. VIGA: duplikaat (seedandmetes on "Martin Tamm")
 POST {{Host}}/api/Players/save
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "id": 0, "name": "Martin Tamm" }
 
 ### TO1. VIGA: duplikaat (seedandmetes on "Premium liiga 2022")
 POST {{Host}}/api/Tournaments/save
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "id": 0, "name": "Premium liiga 2022" }
 
 ### TO2. OK
 POST {{Host}}/api/Tournaments/save
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "id": 0, "name": "Testturniir 13.11" }
 
 ### S1. VIGA: negatiivne skoor, olematu kasutaja ja turniir
 POST {{Host}}/api/Scoreboards/save
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "id": 0, "tournamentId": 99999, "userId": 99999, "score": -5 }
 
 ### S2. VIGA: sama kasutaja samas turniiris (seedandmetes on userId=1, tournamentId=1)
 POST {{Host}}/api/Scoreboards/save
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "id": 0, "tournamentId": 1, "userId": 1, "score": 10 }
 
 ### S3. OK
 POST {{Host}}/api/Scoreboards/save
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "id": 0, "tournamentId": 2, "userId": 1, "score": 10 }
